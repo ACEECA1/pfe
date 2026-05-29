@@ -1,0 +1,16 @@
+Act as an Expert React & Tailwind Developer. We are streamlining the HR navigation flow. I want to completely remove the global "Candidate Pipeline" concept and fix the layout of the "Back" button on the Candidate Evaluation detail page so it anchors to the left.
+
+Please perform the following updates:
+
+**1. Fix the Back Button Layout & Action:**
+- Open the component that renders the individual Candidate Evaluation details (the page with the Match Score and CV).
+- **Alignment:** Locate the wrapper `<div>` around the Back button. It likely has `justify-center` or `mx-auto`. Change it to align left: `<div className="flex justify-start mb-6">`.
+- **Text:** Change the button text/label from "Back to Pipeline" to "Back to Job Offer". (Update the i18n translation key to reflect this if you are using translations).
+- **Routing:** Update the `onClick` handler or `<Link>` to route back to the specific Job Offer. For example: `Maps(\`/hr/job-offers/\${evaluation.cv.jobOffer.id}\`)` or simply use `Maps(-1)` if the user reliably comes from the job offer page.
+
+**2. Remove the Global Pipeline Page:**
+- Open your navigation configuration (where `SidebarShell` items are defined for the HR role).
+- **Delete** the "Candidate Pipeline" or "Pipeline" entry from the sidebar array so it no longer appears in the menu.
+- Open your routing file (e.g., `App.tsx` or `routes.tsx`).
+- **Remove** the `<Route>` that renders the global Pipeline page.
+- You may safely delete the standalone Pipeline component file to keep the codebase clean.

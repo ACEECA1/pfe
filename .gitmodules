@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/ACEECA1/cv-grading-system.git
+[submodule "cv-grading-system-frontend"]
+	path = cv-grading-system-frontend
+	url = https://github.com/ACEECA1/cv-grading-system-frontend

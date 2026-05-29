@@ -1,0 +1,58 @@
+[
+    {
+        "title": "Apprentice Software Developer (L3 MIAGE)",
+        "rawText": "Location: Ile-de-France (Mobility: 77, 93, 75, 92, 91). Time: 1 week University / 1 week Company apprenticeship rhythm starting 2025-2026. Required Skills: Proficiency in Java (Swing), Python, C, and Web technologies (HTML, CSS, JavaScript, PHP). Experience with Android Studio, SQL/MySQL, and UML modeling. Soft Skills: Teamwork and autonomy. Languages: French (C2), English (B2). Experience: Academic projects including hotel management software and 'Pharmavie' mobile app using Scrum."
+    },
+    {
+        "title": "Systems and Network Administration Apprentice",
+        "rawText": "Location: Neuilly-Plaisance (93360) and IDF. Time: 2-year Master's apprenticeship (3 weeks Company / 1 week Training) starting Sept 2025. Required Skills: Windows and Linux server management, TCP/IP, VLAN, VPN, Cisco, Active Directory, GPO, and virtualization (VMWare). Knowledge of cybersecurity tools (Nmap, Metasploit) and monitoring (Nagios). Experience: Support technician roles in hospital environments (CHI Créteil) and network maintenance stages. Languages: English (B2), French. Must have a driver's license (Permis B)."
+    },
+    {
+        "title": "Full-Stack Java/Vue.js Engineer",
+        "rawText": "Location: Ile-de-France. Time: Full-time (CDI). Required Skills: Expert knowledge of Java 8/17, Spring Boot, and Vue 3. Mastery of databases (MySQL, MongoDB, PostgreSQL, Elasticsearch). Experience with Microservices (Spring Cloud), Docker, Jenkins, and Git. Methodology: Agile Scrum. Experience: Professional background at KSR Services developing CRM tools (Kit4Selling) and appointment platforms. Languages: French (Fluent), English (Professional)."
+    },
+    {
+        "title": "Business Developer / Commercial Lead",
+        "rawText": "Location: Villepinte (93420) / Colombes (92700). Time: Full-time (CDI). Required Skills: B2B prospecting (mailing, phoning), negotiation, and CRM usage (Hubspot). Market analysis and competitive intelligence. Experience: Lead experience managing a team of 10 street marketers; former commercial apprentice at L'Officine du Monde focusing on pharmaceutical distribution networks. Languages: French (Native), Arabic (Native). Education: Bachelor in Commercial Development."
+    },
+    {
+        "title": "Avionics & Instrumentation Engineer",
+        "rawText": "Location: Paris (75015). Time: Full-time (CDI) starting Sept 2025. Required Skills: Expertise in guidance and navigation systems, EASA Part 145 regulations, signal processing, and metrology. Technical stack: Python, C++, Matlab, and Arduino/ESP32. Experience: Currently researching cryogenic comparators at the National Metrology Laboratory (LNE). Previous experience in automotive diagnostics at Mercedes-Benz. Education: Double Master's in Aeronautical Systems and Instrumentation. Languages: French (Fluent), Arabic (Native), English (B1)."
+    },
+    {
+        "title": "Cloud Network & 5G Infrastructure Engineer",
+        "rawText": "Location: Palaiseau (91120) / Châtillon. Time: Full-time (CDI) starting Sept 2025. Required Skills: 5G Core Network architecture, SDN/NFV, Kubernetes, Docker, and automation via Python/Ansible. Expertise in Routing/Switching (CCNP level). Experience: Internship at Orange focusing on Telco Cloud and CNF deployment. Background in N1/N2 network support. Languages: French (Fluent), English (Fluent). Education: Master 2 in Networks & Telecoms from Paris-Saclay."
+    },
+    {
+        "title": "Agentic AI Developer / Multi-Agent Systems Engineer",
+        "rawText": "Location: Remote/Algeria (Open to international). Time: Full-time. Required Skills: Expert in Agentic AI, Multi-Agent Systems (MoE architecture), and LLM orchestration. Technical stack: Python, FastAPI, Streamlit, LangChain, and Vector DBs. Experience: Built a production-grade Multi-Agent ERP and recruitment automation pipeline. AI Team Leader for CSCC. Education: 3rd Year B.Sc. Computer Science (Major AI)."
+    },
+    {
+        "title": "Lead AI Engineer (FinTech/Crypto)",
+        "rawText": "Location: Dubai / Tehran / Remote. Time: Full-time. Required Skills: 8+ years experience in ML and NLP. Expertise in RAG-based systems, sentiment analysis, and LLM deployment (GPT, LLaMA). Technical stack: Python, PyTorch, TensorFlow, Airflow, and Docker. Experience: Led an 8-person tech team at Wisdomise; formerly Chapter Lead at Balad Map. PhD in AI from Sharif University."
+    },
+    {
+        "title": "Embedded Systems & IoT Engineer",
+        "rawText": "Location: Villejuif / Paris. Time: Full-time (CDI) starting Sept 2025. Required Skills: C, C++, Python, and FreeRTOS. Expertise in MCUs (STM32, ESP32), Linux kernel (U-Boot, QEMU), and PCB design. Experience: Internship at STMicroelectronics developing NFC stock management systems. Experience with CNN quantization on microcontrollers at CEA Paris-Saclay. Education: Master 2 in Embedded Systems from Paris-Saclay. Languages: English (C1/TOEIC 965)."
+    },
+    {
+        "title": "Cybersecurity Pentester / Vulnerability Analyst",
+        "rawText": "Location: Ile-de-France. Time: 12-24 month apprenticeship starting Sept 2026. Required Skills: Web Pentesting (XSS, SQLI, CSRF), Cryptography, Forensics. Outils: Wireshark, Burp Suite, Nmap. Experience: Developed 'VulScan' (vulnerability scanner using React/Django). Top 5% ranking on Root-Me and active international CTF competitor. Education: Candidate for Master in Cybersecurity (Paris Cité)."
+    },
+    {
+        "title": "Network & Systems Engineer (Automation focus)",
+        "rawText": "Location: Créteil (94000) / IDF. Time: Full-time (CDI) starting Sept 2025. Required Skills: OSPF, BGP, MPLS, SD-WAN, and Network Automation (Python). Experience with Cisco CML, Docker, and Kubernetes. Experience: 2-year apprenticeship at SFR automating network collection configurations and managing migrations. Languages: French (Fluent), English (Professional). Certifications: AWS Cloud Foundations."
+    },
+    {
+        "title": "Mechanical Calculation & Design Engineer",
+        "rawText": "Location: France Métropolitaine. Time: Full-time (CDI) starting Sept 2025. Required Skills: Finite Element Analysis (FEA), SolidWorks, Ansys Workbench, Mathcad, and Eurocodes. Experience: Internship at Framatome performing analytical verification for primary branch handling equipment. Background in planetary crusher design and gas turbine maintenance. Education: Master 2 in Mechanical Design from Paris-Saclay."
+    },
+    {
+        "title": "Energy Sales Specialist / Bunker Trader",
+        "rawText": "Location: Dubai - UAE. Time: Full-time. Required Skills: B2B sales techniques, bunker trading, fuel sales, and complex contract negotiation. Market analysis and customer acquisition. Experience: Sales Officer at DFT Fuel Trading and Bunker Trader at The Hawks Middle East. Background in human resource management (Master). Languages: English (Fluent), French (Fluent), Arabic (Native)."
+    },
+    {
+        "title": "Laravel Web Developer",
+        "rawText": "Location: Remote/Algeria. Time: Full-time. Required Skills: Laravel, PHP, Vue.js, SQL, and Tailwind CSS. Experience: Developed multi-store E-Commerce platforms, E-learning portals, and club management systems. Education: MSc in Big Data Analytics. Portfolio: Includes 100+ responsive landing pages."
+    }
+]

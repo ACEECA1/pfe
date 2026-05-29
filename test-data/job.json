@@ -1,0 +1,67 @@
+{
+    "success": true,
+    "message": "Job offer details",
+    "data": {
+        "id": 7,
+        "title": "Senior Java Backend Developer (Spring Boot)",
+        "status": "PUBLISHED",
+        "createdAt": "2026-05-26T19:08:36.440618Z",
+        "structuredJd": {
+            "id": 7,
+            "title": "Senior Java Backend Developer (Spring Boot)",
+            "companyName": "DJEZZY",
+            "requiredSkills": [
+                "Java 17+",
+                "Spring Boot 3.x",
+                "Spring Security",
+                "Spring Data JPA",
+                "Hibernate",
+                "RESTful APIs",
+                "JWT",
+                "PostgreSQL",
+                "MySQL",
+                "Microservices Architecture",
+                "Docker",
+                "Kubernetes",
+                "CI/CD",
+                "OpenAPI",
+                "Swagger",
+                "JUnit",
+                "Mockito",
+                "Testcontainers",
+                "Multithreading",
+                "Concurrency Patterns",
+                "JVM Fundamentals",
+                "Service Discovery",
+                "Inter-service Communication",
+                "Asynchronous Processing"
+            ],
+            "preferredSkills": [],
+            "experienceRange": {
+                "minYears": "2",
+                "maxYears": "5"
+            },
+            "responsibilities": [
+                "Design and implement robust, scalable microservices using Java and Spring Boot",
+                "Develop secure, efficient, and well-documented RESTful APIs",
+                "Architect and maintain secure authentication and authorization flows using JWT and Spring Security",
+                "Design, optimize, and manage relational database schemas and complex queries",
+                "Write comprehensive unit and integration tests",
+                "Partner with cross-functional teams to deliver end-to-end features",
+                "Support CI/CD pipelines",
+                "Participate in technical design reviews"
+            ],
+            "qualifications": [
+                "Strong proficiency in modern Java (17+)",
+                "Deep hands-on experience with Spring Boot 3.x, Spring Security, and Spring Data",
+                "Proven expertise in relational databases and ORM frameworks",
+                "Solid understanding of microservices architecture",
+                "Familiarity with containerization and modern CI/CD workflows",
+                "Experience with API documentation tools"
+            ],
+            "workLocation": "Remote/Hybrid",
+            "employmentType": "Full-Time"
+        }
+    },
+    "timestamp": "2026-05-28T21:45:58.050200800Z"
+}

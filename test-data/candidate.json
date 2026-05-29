@@ -1,0 +1,293 @@
+{
+    "success": true,
+    "message": "Evaluation details",
+    "data": {
+        "id": 46,
+        "status": "SCORED",
+        "overallScore": 8.5,
+        "recommendation": "Recommend to hire",
+        "reasoning": "The candidate has a strong match with the job requirements, with a high level of proficiency in the required skills and a good alignment with the experience requirements. The only missing skills are Spring Security, Spring Data JPA, Hibernate, and Microservices Architecture, which are all high-importance skills. However, the candidate's overall score is still high enough to recommend hiring.",
+        "matchedSkills": [
+            "Java",
+            "Spring Boot",
+            "RESTful APIs",
+            "JWT",
+            "PostgreSQL",
+            "MySQL",
+            "Docker",
+            "Kubernetes",
+            "CI/CD",
+            "OpenAPI",
+            "Swagger",
+            "JUnit",
+            "Mockito",
+            "Testcontainers",
+            "Multithreading",
+            "Concurrency Patterns",
+            "JVM Fundamentals",
+            "Service Discovery",
+            "Inter-service Communication",
+            "Asynchronous Processing"
+        ],
+        "missingSkills": [
+            {
+                "skillName": "Spring Security",
+                "importance": "High"
+            },
+            {
+                "skillName": "Spring Data JPA",
+                "importance": "High"
+            },
+            {
+                "skillName": "Hibernate",
+                "importance": "High"
+            },
+            {
+                "skillName": "Microservices Architecture",
+                "importance": "High"
+            }
+        ],
+        "experienceAlignment": {
+            "yearsRequired": {
+                "min": 2,
+                "max": 5
+            },
+            "yearsCandidate": 4,
+            "matchScore": 8.0
+        },
+        "educationMatch": {
+            "requiredDegree": "Not specified",
+            "candidateDegree": "Master « Ingénierie des Logiciels »",
+            "matchLevel": "MATCH",
+            "reasoning": "Candidate has a Master's degree in Software Engineering, which is a good match for the job requirements."
+        },
+        "cvId": 46,
+        "cvUploadDate": "2026-05-28T21:33:32.379138Z",
+        "candidateId": 2,
+        "candidateFullName": "Yassine Ali Kacem",
+        "jobOfferId": 7,
+        "jobOfferTitle": "Senior Java Backend Developer (Spring Boot)",
+        "profileData": {
+            "personalInfo": {
+                "email": "mohamed.hadjersi.99@gmail.com",
+                "phone": "0758221610",
+                "location": null,
+                "linkedin": null
+            },
+            "experience": [
+                {
+                    "title": "Ingénieur Full-stack JAVA / VUEJS",
+                    "company": "KSR SERVICES",
+                    "duration": "01/2023 - Present",
+                    "description": "Développement et maintenance d’applications web et de solutions logicielles sur mesure pour nos clients. Participation à plusieurs projets, notamment : Kit4Planning : application de gestion de rendez-vous atelier, incluant la gestion des événements, clients, ateliers, plannings, utilisateurs et reporting. Kit4Planning-Web : plateforme destinée aux clients finaux pour la prise de rendez-vous atelier en ligne. Kit4Trying : application de gestion des rendez-vous d’essai, dédiée aux concessions. Kit4Trying-Web : interface client pour la prise de rendez-vous d’essai en ligne. Kit4Selling : CRM complet assurant la gestion des clients, ventes, devis, factures et suivi commercial. Conception et développement de nouvelles fonctionnalités en Java (Spring Boot) côté back-end et Vue.js côté front-end. Développement et intégration d’API REST pour assurer la communication entre les différents systèmes. Optimisation des performances et refonte des fonctionnalités pour une meilleure expérience utilisateur. Gestion des bases de données MongoDB, MySQL et Elasticsearch pour un stockage efficace et performant. Mise en place de tests unitaires et fonctionnels pour garantir la stabilité et la fiabilité du code. Participation au déploiement des applications. Collaboration avec les équipes métier pour analyser les besoins et proposer des solutions adaptées. Rédaction et mise à jour de la documentation technique pour assurer la maintenabilité des applications."
+                },
+                {
+                    "title": "Consultant et développeur full stack",
+                    "company": "Sig Service",
+                    "duration": "01/2021 – 12/2022 - Present",
+                    "description": "Modernisation de l’application existante en utilisant les bonnes pratiques pour assurer le bon fonctionnement de service livraison. Définition des spécifications fonctionnelles et techniques des applications. Recueillir des besoins et exigences fonctionnelles. Conception, développement et test de nouvelles fonctionnalités. Maintenir les modules existants. Modélisation de la base des données. Rédaction des cas de tests des applications. Formations et supports pour nos clients sur nos projets."
+                },
+                {
+                    "title": "Développeur Java / Web",
+                    "company": "NTUSA",
+                    "duration": "06/2019 – 12/2019 - Present",
+                    "description": "Gestion et maintenance d'une application Flexy, avec un suivi rigoureux des performances et de la qualité. Intégration et développement de nouvelles fonctionnalités, en respectant les besoins des utilisateurs et les bonnes pratiques. Conception et modélisation de la base de données, assurant une structure optimisée et évolutive."
+                }
+            ],
+            "education": [
+                {
+                    "degree": "Master « Ingénierie des Logiciels »",
+                    "institution": "Saad Dahlab University",
+                    "year": "06/2020"
+                },
+                {
+                    "degree": "Licence «Systèmes informatiques»",
+                    "institution": "Saad Dahlab University",
+                    "year": "06/2018"
+                },
+                {
+                    "degree": "JAVA/Spring Boot",
+                    "institution": "Udemy",
+                    "year": null
+                }
+            ],
+            "languages": [],
+            "skills": [
+                "Java",
+                "Spring Boot",
+                "Vue.js",
+                "MongoDB",
+                "MySQL",
+                "Elasticsearch",
+                "RESTful APIs",
+                "JSON Web Tokens",
+                "PostgreSQL",
+                "Docker",
+                "Kubernetes",
+                "Continuous Integration/Continuous Deployment",
+                "OpenAPI",
+                "Swagger",
+                "JUnit",
+                "Mockito",
+                "Testcontainers",
+                "Multithreading",
+                "Concurrency Patterns",
+                "JVM Fundamentals",
+                "Service Discovery",
+                "Inter-service Communication",
+                "Asynchronous Processing"
+            ]
+        },
+        "technicalQuestions": [
+            {
+                "question": "How would you design a RESTful API using Spring Boot and OpenAPI?",
+                "expectedAnswer": "The candidate should walk through the design, covering the API endpoints, request and response formats, error handling, and security considerations.",
+                "difficulty": "Intermediate",
+                "skillArea": "API Design, Spring Boot, OpenAPI",
+                "bluffIndicator": false,
+                "followUpQuestions": [
+                    "Can you describe the process of implementing OpenAPI? How would you handle API versioning?",
+                    "How would you implement authentication and authorization for the API?"
+                ]
+            },
+            {
+                "question": "What is the difference between Spring Data JPA and Hibernate?",
+                "expectedAnswer": "The candidate should explain that Hibernate is an ORM tool that provides a way to interact with the database, whereas Spring Data JPA is a higher-level abstraction that provides a simple programming model for database access.",
+                "difficulty": "Beginner",
+                "skillArea": "Spring Data JPA, Hibernate",
+                "bluffIndicator": true,
+                "followUpQuestions": [
+                    "Can you provide an example of when you would use Hibernate over Spring Data JPA?",
+                    "How does Spring Data JPA handle transactions?"
+                ]
+            },
+            {
+                "question": "Design a CI/CD pipeline using Docker, Kubernetes, and JUnit for a Spring Boot application.",
+                "expectedAnswer": "The candidate should outline the pipeline process, including building and pushing the Docker image, deploying to Kubernetes, and running JUnit tests.",
+                "difficulty": "Advanced",
+                "skillArea": "CI/CD, Docker, Kubernetes, JUnit",
+                "bluffIndicator": false,
+                "followUpQuestions": [
+                    "Can you describe how you would implement rolling updates in Kubernetes?",
+                    "How would you handle logging and monitoring in the pipeline?"
+                ]
+            },
+            {
+                "question": "Explain the concept of asynchronous processing in a microservices architecture and provide an example of how you would implement it using Spring Boot and Testcontainers.",
+                "expectedAnswer": "The candidate should explain the benefits of asynchronous processing, how it is used in microservices, and provide an example of how to implement it using Spring Boot and Testcontainers.",
+                "difficulty": "Advanced",
+                "skillArea": "Asynchronous Processing, Microservices Architecture, Spring Boot, Testcontainers",
+                "bluffIndicator": true,
+                "followUpQuestions": [
+                    "Can you describe how you would handle errors in an asynchronous processing scenario?",
+                    "How would you implement retries for failed tasks?"
+                ]
+            },
+            {
+                "question": "Design a service discovery system using Kubernetes and Consul for a distributed microservices architecture.",
+                "expectedAnswer": "The candidate should outline the design of the service discovery system, including how to use Kubernetes and Consul to register and resolve services.",
+                "difficulty": "Expert",
+                "skillArea": "Service Discovery, Kubernetes, Consul",
+                "bluffIndicator": false,
+                "followUpQuestions": [
+                    "Can you describe how you would implement health checks for services in the discovery system?",
+                    "How would you handle service registries that are unavailable or down?"
+                ]
+            },
+            {
+                "question": "Explain the JVM fundamentals, including garbage collection, memory management, and class loading, and provide an example of how to optimize JVM performance for a Spring Boot application.",
+                "expectedAnswer": "The candidate should explain the JVM fundamentals, how to monitor and optimize JVM performance, and provide an example of how to optimize JVM performance for a Spring Boot application.",
+                "difficulty": "Expert",
+                "skillArea": "JVM Fundamentals, Spring Boot",
+                "bluffIndicator": true,
+                "followUpQuestions": [
+                    "Can you describe how you would implement JVM monitoring and profiling?",
+                    "How would you handle JVM crashes or out-of-memory errors?"
+                ]
+            }
+        ],
+        "hrQuestions": [
+            {
+                "question": "Can you describe a situation where you had to learn a new technology or programming language quickly to meet a project deadline?",
+                "psychologicalIntent": "Assess the candidate's ability to adapt to new technologies and their motivation to learn",
+                "idealResponseIndicators": [
+                    "Demonstrated a willingness to learn",
+                    "Applied new learning to meet project deadlines",
+                    "Showcased enthusiasm for learning"
+                ],
+                "redFlags": [
+                    "Failed to learn new technology",
+                    "Lacked motivation to learn",
+                    "Did not apply learning to meet project deadlines"
+                ],
+                "followUpProbes": [
+                    "Can you walk me through the process of how you learned the new technology?",
+                    "How did you stay motivated to learn?",
+                    "Can you give an example of a project where you had to apply your new learning?"
+                ],
+                "evaluationCriteria": "Look for evidence of the candidate's ability to quickly learn new technologies, their motivation to learn, and their ability to apply that learning to meet project deadlines"
+            },
+            {
+                "question": "Tell me about a time when you had to work with a team to resolve a complex technical issue. What was your role in the team, and how did you contribute to the resolution?",
+                "psychologicalIntent": "Assess the candidate's ability to work collaboratively with others to achieve a common goal",
+                "idealResponseIndicators": [
+                    "Demonstrated effective communication skills",
+                    "Contributed to the resolution of the issue",
+                    "Showcased a willingness to work collaboratively"
+                ],
+                "redFlags": [
+                    "Failed to contribute to the resolution",
+                    "Lacked effective communication skills",
+                    "Did not work collaboratively with the team"
+                ],
+                "followUpProbes": [
+                    "Can you walk me through the steps you took to resolve the issue?",
+                    "How did you communicate with your team members?",
+                    "Can you give an example of a time when you had to explain a technical concept to a non-technical team member?"
+                ],
+                "evaluationCriteria": "Look for evidence of the candidate's ability to work collaboratively, their communication skills, and their problem-solving abilities"
+            },
+            {
+                "question": "Can you describe a situation where you had to handle a difficult team member or customer? How did you resolve the issue?",
+                "psychologicalIntent": "Assess the candidate's ability to resolve conflicts and handle difficult team members or customers",
+                "idealResponseIndicators": [
+                    "Remained calm under pressure",
+                    "Found a resolution that met the needs of all parties",
+                    "Showcased effective conflict resolution skills"
+                ],
+                "redFlags": [
+                    "Failed to resolve the issue",
+                    "Lacked effective conflict resolution skills",
+                    "Escalated the situation"
+                ],
+                "followUpProbes": [
+                    "Can you walk me through the steps you took to resolve the issue?",
+                    "How did you communicate with the difficult team member or customer?",
+                    "Can you give an example of a time when you had to apologize to a team member or customer?"
+                ],
+                "evaluationCriteria": "Look for evidence of the candidate's conflict resolution skills, their ability to remain calm under pressure, and their ability to find a resolution that meets the needs of all parties"
+            },
+            {
+                "question": "Where do you see yourself in five years, and how does this role fit into your long-term career goals?",
+                "psychologicalIntent": "Assess the candidate's motivation, career goals, and alignment with the company's vision",
+                "idealResponseIndicators": [
+                    "Demonstrated a clear understanding of the company's vision",
+                    "Aligned their career goals with the company's vision",
+                    "Showcased enthusiasm for the role and the company"
+                ],
+                "redFlags": [
+                    "Lacked clear career goals",
+                    "Did not align their career goals with the company's vision",
+                    "Showcased a lack of enthusiasm for the role or the company"
+                ],
+                "followUpProbes": [
+                    "Can you tell me more about your career goals?",
+                    "How do you see this role contributing to your long-term career goals?",
+                    "Can you give an example of a time when you had to make a career decision that aligned with your goals?"
+                ],
+                "evaluationCriteria": "Look for evidence of the candidate's motivation, their career goals, and their alignment with the company's vision"
+            }
+        ]
+    },
+    "timestamp": "2026-05-28T21:44:36.085928700Z"
+}

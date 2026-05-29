@@ -1,0 +1,804 @@
+{
+  "name": "CV Intelligence Pipeline with Multi-Agent Analysis and Matching",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Extract contact details using deterministic regex patterns\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  // Get the normalized CV text\n  const cvText = item.json.normalizedText || item.json.cv_text || '';\n  \n  if (!cvText) {\n    results.push({\n      json: {\n        ...item.json,\n        contact_info: {\n          email: null,\n          phone: null,\n          linkedin: null\n        }\n      }\n    });\n    continue;\n  }\n  \n  // Email regex pattern\n  const emailRegex = /\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b/g;\n  const emailMatches = cvText.match(emailRegex);\n  const email = emailMatches ? emailMatches[0] : null;\n  \n  // Phone number regex patterns (supports various formats)\n  const phoneRegex = /(?:\\+?\\d{1,3}[-.\\s]?)?(?:\\(?\\d{1,4}\\)?[-.\\s]?)?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}/g;\n  const phoneMatches = cvText.match(phoneRegex);\n  // Filter out numbers that are too short or too long\n  const validPhones = phoneMatches ? phoneMatches.filter(p => {\n    const digitsOnly = p.replace(/\\D/g, '');\n    return digitsOnly.length >= 10 && digitsOnly.length <= 15;\n  }) : [];\n  const phone = validPhones.length > 0 ? validPhones[0] : null;\n  \n  // LinkedIn URL regex pattern\n  const linkedinRegex = /(?:https?:\\/\\/)?(?:www\\.)?linkedin\\.com\\/in\\/[A-Za-z0-9_-]+\\/?/gi;\n  const linkedinMatches = cvText.match(linkedinRegex);\n  const linkedin = linkedinMatches ? linkedinMatches[0] : null;\n  \n  // Return structured contact info\n  results.push({\n    json: {\n      ...item.json,\n      contact_info: {\n        email: email,\n        phone: phone,\n        linkedin: linkedin\n      }\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "4d332473-b564-4b11-87f4-602ff77c8b47",
+      "name": "Extract Personal Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "c56a87dd-a3a7-44b8-9e52-22ef34ea3456",
+      "name": "Merge Validation Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        176
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "df7561e8-3b14-40de-b180-d51252ef7aab",
+      "name": "Merge Interview Questions",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build final CV analysis response combining all available outputs\n\nconst inputItems = $input.all();\n\nconst response = {\n  status: 'success',\n  processing_time: null,\n  profile_data: null,\n  validation_report: null,\n  structured_jd: null,\n  match_score: null,\n  technical_questions: null,\n  hr_questions: null\n};\n\nfunction getNodeOutput(nodeName) {\n  try {\n    const item = $(nodeName).first();\n    return item?.json?.output ?? item?.json ?? null;\n  } catch (error) {\n    return null;\n  }\n}\n\nfunction getNodeJson(nodeName) {\n  try {\n    return $(nodeName).first()?.json ?? null;\n  } catch (error) {\n    return null;\n  }\n}\n\n// Processing time\nconst receiveNode = getNodeJson('Receive CV and Job Description');\nconst startTime = receiveNode?.timestamp || Date.now();\nresponse.processing_time = `${((Date.now() - startTime) / 1000).toFixed(2)}s`;\n\n// CV parser\nconst cvParserOutput =\n  getNodeOutput('Parse CV Parser Response') ||\n  getNodeOutput('Parse CV Parser Response1');\n\nif (cvParserOutput) {\n  response.profile_data = cvParserOutput;\n}\n\n// Consistency / validation\nconst consistencyOutput = getNodeOutput('Parse Consistency Response');\nif (consistencyOutput?.validation_report) {\n  response.validation_report = consistencyOutput.validation_report;\n} else if (consistencyOutput) {\n  response.validation_report = consistencyOutput;\n}\n\n// JD parser\nconst jdParserOutput =\n  getNodeOutput('Parse JD Parser Response') ||\n  getNodeOutput('Parse Job Description Response');\n\nif (jdParserOutput) {\n  response.structured_jd = jdParserOutput;\n}\n\n// Matching\nconst matchingOutput = getNodeOutput('Parse Matching Response');\nif (matchingOutput?.match_score) {\n  response.match_score = matchingOutput.match_score;\n} else if (matchingOutput) {\n  response.match_score = matchingOutput;\n}\n\n// Questions from current merged input items\nfor (const item of inputItems) {\n  const data = item.json?.output ?? item.json;\n\n  if (data?.technical_questions) {\n    response.technical_questions = data.technical_questions;\n  }\n\n  if (data?.hr_questions) {\n    response.hr_questions = data.hr_questions;\n  }\n}\n\n// Fallback: questions from named nodes, if they exist\nif (!response.technical_questions) {\n  const technicalOutput = getNodeOutput('Parse Technical Questions Response');\n  response.technical_questions =\n    technicalOutput?.technical_questions ?? technicalOutput ?? null;\n}\n\nif (!response.hr_questions) {\n  const hrOutput = getNodeOutput('Parse HR Questions Response');\n  response.hr_questions =\n    hrOutput?.hr_questions ?? hrOutput ?? null;\n}\n\n// Contact info\nconst personalInfo = getNodeJson('Extract Personal Info');\nconst contactInfo = personalInfo?.contact_info;\n\nif (contactInfo && response.profile_data) {\n  response.profile_data.contact_info = contactInfo;\n}\n\n// Normalized skills\nconst skillsOutput = getNodeOutput('Parse Skills Response');\n\nif (skillsOutput?.normalized_skills && response.profile_data) {\n  response.profile_data.normalized_skills = skillsOutput.normalized_skills;\n}\n\nreturn [{ json: response }];\n"
+      },
+      "id": "cd84cceb-4d27-4a43-96bf-f498edeb81c9",
+      "name": "Build Final Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"model\": \"stepfun/step-3.5-flash\", \"messages\": [ { \"role\": \"system\", \"content\": \"# Role & Persona\\nYou are an expert CV Parser with 15+ years of experience in recruitment data extraction. Your specialty is converting unstructured resume text into precise, structured candidate profiles while maintaining 100% accuracy on dates, contact information, and employment history.\\n\\n# Standard Operating Procedure\\n\\n## Step 1: Personal Information Extraction\\nScan document and extract structured data\\n\\nReturn JSON only.\" }, { \"role\": \"user\", \"content\": {{ JSON.stringify($json.cv_text) }} } ], \"temperature\": 0.2, \"max_tokens\": 30000 }",
+        "options": {}
+      },
+      "id": "4aa4b999-3ee0-4df5-b9a6-92c5081f187b",
+      "name": "CV Parser API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1120,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "9bd7929e-f870-4836-a2f0-04f8cc2dc245",
+      "name": "Parse CV Parser Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"stepfun/step-3.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a CV & Job Description Matching Expert. Your job is to analyze compatibility between a candidate CV and a job description. You must detect skill gaps, experience mismatches, missing requirements, and relevance score.\\n\\n# Output Rules\\n- Return ONLY valid JSON.\\n- No markdown, no explanations, no extra text.\\n- Do not include any fields outside the specified schema.\\n\\n# Required JSON Schema\\n{\\n  \\\"relevance_score\\\": number (0-100),\\n  \\\"match_status\\\": string (e.g., \\\"Highly Recommended\\\", \\\"Partial Match\\\", \\\"Not Recommended\\\"),\\n  \\\"skill_gaps\\\": [\\\"string\\\"],\\n  \\\"experience_mismatch\\\": boolean,\\n  \\\"missing_requirements\\\": [\\\"string\\\"],\\n  \\\"strengths\\\": [\\\"string\\\"],\\n  \\\"recommendation\\\": string\\n}\\n\\n# Classification Rules\\n- relevance_score: overall match percentage based on skills, experience, education, location.\\n- match_status: descriptive summary of the match quality.\\n- skill_gaps: list of required or preferred skills missing from CV.\\n- experience_mismatch: true if candidate's years of experience are below minimum required.\\n- missing_requirements: any non-skill requirements not met (e.g., missing degree, location, language).\\n- strengths: positive points of the candidate relative to the job.\\n- recommendation: brief explanation of whether to proceed and why.\\n\\n# Important\\n- Be objective and data-driven.\\n- Use only the information provided in the CV and job description.\\n- If a field is not applicable, use an empty array or null as appropriate.\\n\\nNow analyze the following input.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(JSON.stringify($json)) }}\n    }\n  ],\n  \"temperature\": 0.2,\n  \"max_tokens\": 30000\n}",
+        "options": {}
+      },
+      "id": "04f4664f-96b1-439a-abfd-b9700e01973f",
+      "name": "Consistency Check API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "fd46cc84-450f-4087-b332-563239a56de8",
+      "name": "Parse Consistency Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"stepfun/step-3.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a Skills Standardization Expert. Normalize skill names and categorize them. Return ONLY a valid JSON object, no markdown, no extra text. The JSON must have the following structure:\\n{\\n  \\\"normalized_skills\\\": [\\n    {\\n      \\\"original_name\\\": string,\\n      \\\"normalized_name\\\": string,\\n      \\\"category\\\": \\\"frontend\\\" | \\\"backend\\\" | \\\"database\\\" | \\\"devops\\\" | \\\"cloud\\\" | \\\"mobile\\\" | \\\"testing\\\" | \\\"data_science\\\" | \\\"machine_learning\\\" | \\\"security\\\" | \\\"design\\\" | \\\"project_management\\\" | \\\"soft_skills\\\" | \\\"other\\\",\\n      \\\"proficiency_level\\\": string,\\n      \\\"years_experience\\\": number\\n    }\\n  ]\\n}\\n\\nExamples: k8s → Kubernetes (devops), React.js → React (frontend), Postgres → PostgreSQL (database).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(JSON.stringify($json)) }}\n    }\n  ],\n  \"temperature\": 0.2,\n  \"max_tokens\": 20000\n}",
+        "options": {}
+      },
+      "id": "c809d2ff-bbb6-4cdc-8cd0-921b20c57430",
+      "name": "Skills Taxonomy API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -224,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "2d6ce73e-20cc-4449-a5ed-7c6b3d8196be",
+      "name": "Parse Skills Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"stepfun/step-3.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a Senior Talent Matching Analyst. Compare CV to job requirements and calculate match score.\\n\\n# Output Rules\\n- Return ONLY valid JSON.\\n- No markdown, no explanations, no extra text.\\n- The JSON must have exactly one root key: \\\"match_score\\\".\\n\\n# Required JSON Schema\\n{\\n  \\\"match_score\\\": {\\n    \\\"overall_score\\\": number (1-10),\\n    \\\"matched_skills\\\": [\\n      { \\\"skill_name\\\": string, \\\"proficiency_match\\\": string }\\n    ],\\n    \\\"missing_skills\\\": [\\n      { \\\"skill_name\\\": string, \\\"importance\\\": \\\"Low\\\" | \\\"Medium\\\" | \\\"High\\\" }\\n    ],\\n    \\\"experience_alignment\\\": {\\n      \\\"years_required\\\": number,\\n      \\\"years_candidate\\\": number,\\n      \\\"match_percentage\\\": number\\n    },\\n    \\\"education_match\\\": {\\n      \\\"required_degree\\\": string,\\n      \\\"candidate_degree\\\": string,\\n      \\\"match_status\\\": string\\n    },\\n    \\\"recommendation\\\": \\\"hire\\\" | \\\"interview\\\" | \\\"reject\\\",\\n    \\\"reasoning\\\": string\\n  }\\n}\\n\\n# Scoring Rules\\n- Score 8-10 → hire\\n- Score 5-7.9 → interview\\n- Score 1-4.9 → reject\\n- Be objective, use only provided data.\\n\\nNow analyze the following input.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(JSON.stringify({ cv: Object.assign({}, $input.all()[0].json.cv, { skills: $input.all()[3].json.output.normalized_skills }), job_description: $input.all()[0].json.job_description })) }}\n    }\n  ],\n  \"temperature\": 0.2,\n  \"max_tokens\": 100000\n}",
+        "options": {}
+      },
+      "id": "86097dea-bac3-4a11-a0be-e5af6a905316",
+      "name": "Matching Engine API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "24e94a64-3c79-4973-85ad-f1f068e30074",
+      "name": "Parse Matching Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "00bdee91-5e71-4fdc-b82b-e844227d2d00",
+      "name": "Parse Technical Questions Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"stepfun/step-3.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an HR Behavioral Interview Specialist. Generate behavioral interview questions.\\n\\n# Output Rules\\n- Return ONLY valid JSON.\\n- No markdown, no explanations, no extra text.\\n- The JSON must have exactly one root key: \\\"hr_questions\\\".\\n\\n# Required JSON Schema\\n{\\n  \\\"hr_questions\\\": [\\n    {\\n      \\\"question\\\": string,\\n      \\\"psychological_intent\\\": string,\\n      \\\"ideal_response_indicators\\\": [string],\\n      \\\"red_flags\\\": [string],\\n      \\\"follow_up_probes\\\": [string],\\n      \\\"evaluation_criteria\\\": string\\n    }\\n  ]\\n}\\n\\n# Focus Areas\\n- Cultural fit\\n- Motivation\\n- Teamwork\\n- Conflict resolution\\n- Career goals\\n\\nNow generate 4 behavioral questions based on the candidate's CV and the job description provided.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(JSON.stringify($json)) }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 100000\n}",
+        "options": {}
+      },
+      "id": "63501ccd-81ed-4911-b9a7-c345caab767e",
+      "name": "HR Questions API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nlet content = response.choices[0].message.content;\ncontent = content.replace(/<think>.*?<\\/think>/gs, '').trim();\nconst jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\nconst parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(content);\nreturn [{ json: { output: parsed } }];"
+      },
+      "id": "f2169e6b-3501-4d6a-a9df-729c6b6ed9ea",
+      "name": "Parse HR Questions Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        96
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "17d51eba-82d6-4f7b-a729-b60e19178607",
+      "name": "Merge CV and JD Parsers",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -672,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cv",
+              "name": "cv",
+              "value": "={{ JSON.stringify($('Parse CV Parser Response').item.json.output) }}",
+              "type": "object"
+            },
+            {
+              "id": "job_description",
+              "name": "job_description",
+              "value": "={{ $input.all()[1].json.job_description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e4ddf76-5c5d-452d-8c79-cc8a21d5d1de",
+      "name": "Combine CV and JD Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer sk-or-v1-YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"stepfun/step-3.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a Senior Technical Interview Architect. Generate 5-7 technical interview questions.\\n\\n# Output Rules\\n- Return ONLY valid JSON.\\n- No markdown, no explanations, no extra text.\\n- The JSON must have exactly one root key: \\\"technical_questions\\\".\\n\\n# Required JSON Schema\\n{\\n  \\\"technical_questions\\\": [\\n    {\\n      \\\"question\\\": string,\\n      \\\"expected_answer\\\": string,\\n      \\\"difficulty\\\": \\\"easy\\\" | \\\"medium\\\" | \\\"hard\\\",\\n      \\\"skill_area\\\": string,\\n      \\\"bluff_indicator\\\": boolean,\\n      \\\"follow_up_questions\\\": [string]\\n    }\\n  ]\\n}\\n\\n# Distribution\\n- 2 easy questions\\n- 3 medium questions\\n- 2 hard questions\\n\\n# Bluff Indicator\\n- Set bluff_indicator = true for questions that test claimed expertise depth (e.g., advanced framework internals, performance edge cases).\\n\\nNow generate technical questions based on the candidate's CV and the job description provided.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(JSON.stringify($json)) }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 100000\n}",
+        "options": {}
+      },
+      "id": "36047814-3804-499b-b793-dc8f0a4cb9fb",
+      "name": "Technical Questions API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# Role / Persona\nYou are a world-class **JSON Schema Validation and Repair Agent** specialized in structured data pipelines for AI systems (CV parsing, job matching, and HR analytics).\n\nYou are extremely strict, deterministic, and reliable. Your primary goal is to ensure that all outputs strictly conform to a predefined schema without losing information.\n\nYou think step-by-step internally but NEVER output reasoning.\n\n---\n\n# Objective / Task\nYour task is to:\n\n1. Validate whether the input JSON matches the expected schema.\n2. Detect structural, type, and consistency issues.\n3. Automatically fix the JSON while preserving all valid data.\n4. Normalize inconsistent formats (skills, languages, duplicates, naming).\n5. Ensure the final output is 100% schema-compliant and machine-readable.\n\nYou MUST output ONLY corrected JSON.\n\n---\n\n# Context\nYou are used in an automated AI pipeline that processes:\n- CV parsing outputs\n- Job descriptions\n- Skill normalization systems\n- Match scoring engines\n- Interview generation systems\n\nDownstream systems depend on your output being perfectly structured.\n\nFailure to follow schema = pipeline failure.\n\n---\n\n# SOP (Standard Operating Procedure)\n\nFollow this step-by-step process internally:\n\n## 1. Parse\n- Read the full JSON input carefully\n- Identify structure type (array or object)\n- Detect missing or malformed fields\n\n## 2. Validate\nCheck:\n- Required fields exist\n- Correct data types (string, array, object)\n- No structural mismatches\n- No duplicated or inconsistent entries\n\n## 3. Normalize\n- Standardize skill names (e.g. \"C++\" stays \"C++\")\n- Merge duplicates (case-insensitive)\n- Normalize languages (e.g. \"Anglais\" → \"English\")\n- Ensure consistent naming across sections\n\n## 4. Repair\n- Add missing required fields with safe defaults:\n  - strings → \"\"\n  - arrays → []\n  - objects → {}\n- Fix broken nesting\n- Repair invalid JSON structure\n\n## 5. Preserve Meaning\n- NEVER invent new data\n- NEVER remove valid information unless corrupted\n- NEVER summarize or rewrite content semantically\n\n## 6. Output\nReturn ONLY corrected JSON (no explanation)\n\n---\n\n# Instructions & Rules (CRITICAL)\n\n- Output MUST be valid JSON only\n- No markdown, no comments, no text\n- Must preserve original structure intent\n- Must not hallucinate data\n- Must not drop fields unless structurally invalid\n- Must ensure schema consistency across all nested objects\n\n---\n\n# Schema Rules (STRICT)\n\n## Top-Level Structure\nMust always be:\n\n```json\n[\n  {\n    \"status\": \"success | error\",\n    \"processing_time\": \"string\",\n    \"profile_data\": {},\n    \"structured_jd\": {},\n    \"match_score\": {},\n    \"technical_questions\": [],\n    \"hr_questions\": []\n  }\n]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1792,
+        192
+      ],
+      "id": "f5bb982f-fe17-4a02-941f-32e796fc3afc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"status\": \"string\",\n    \"processing_time\": \"string\",\n    \"profile_data\": {\n      \"personal_info\": {\n        \"first_name\": \"string\",\n        \"last_name\": \"string\",\n        \"email\": \"string\",\n        \"phone\": \"string\",\n        \"location\": \"string\"\n      },\n      \"experiences\": [\n        {\n          \"title\": \"string\",\n          \"company\": \"string\",\n          \"start_date\": \"string\",\n          \"end_date\": \"string\",\n          \"description\": \"string\"\n        }\n      ],\n      \"education\": [\n        {\n          \"degree\": \"string\",\n          \"institution\": \"string\",\n          \"start_date\": \"string\",\n          \"end_date\": \"string\",\n          \"honors\": \"string\"\n        }\n      ],\n      \"skills\": [\n        \"string\"\n      ],\n      \"languages\": [\n        {\n          \"language\": \"string\",\n          \"level\": \"enum (A1, A2, B1, B2, C1, C2)\"\n        }\n      ],\n      \"certificates\": [\n        {\n          \"name\": \"string\",\n          \"issuer\": \"string\",\n          \"date\": \"string\"\n        }\n      ],\n      \"hobbies\": [\n        \"string\"\n      ],\n      \"contact_info\": {\n        \"email\": \"string\",\n        \"phone\": \"string\",\n        \"linkedin\": \"string\"\n      },\n      \"normalized_skills\": [\n        {\n          \"original_name\": \"string\",\n          \"normalized_name\": \"string\",\n          \"category\": \"string\",\n          \"proficiency_level\": \"string\",\n          \"years_experience\": \"number\"\n        }\n      ]\n    },\n    \"structured_jd\": {\n      \"job_title\": \"string\",\n      \"company_name\": \"string\",\n      \"required_skills\": [\n        \"string\"\n      ],\n      \"preferred_skills\": [\n        \"string\"\n      ],\n      \"experience_range\": {\n        \"min_years\": \"number\",\n        \"max_years\": \"number or null\"\n      },\n      \"responsibilities\": [\n        \"string\"\n      ],\n      \"qualifications\": [\n        \"string\"\n      ],\n      \"work_location\": \"string\",\n      \"employment_type\": \"string\"\n    },\n    \"match_score\": {\n      \"overall_score\": \"number\",\n      \"matched_skills\": [\n        \"string\"\n      ],\n      \"missing_skills\": [\n        {\n          \"skill_name\": \"string\",\n          \"importance\": \"string\"\n        }\n      ],\n      \"experience_alignment\": {\n        \"years_required\": \"number\",\n        \"years_candidate\": \"number\",\n        \"match_percentage\": \"number\"\n      },\n      \"education_match\": {\n        \"required_degree\": \"string\",\n        \"candidate_degree\": \"string\",\n        \"match_status\": \"string\"\n      },\n      \"recommendation\": \"string\",\n      \"reasoning\": \"string\"\n    },\n    \"technical_questions\": [\n      {\n        \"question\": \"string\",\n        \"expected_answer\": \"string\",\n        \"difficulty\": \"string\",\n        \"skill_area\": \"string\",\n        \"bluff_indicator\": \"boolean\",\n        \"follow_up_questions\": [\n          \"string\"\n        ]\n      }\n    ],\n    \"hr_questions\": [\n      {\n        \"question\": \"string\",\n        \"psychological_intent\": \"string\",\n        \"ideal_response_indicators\": [\n          \"string\"\n        ],\n        \"red_flags\": [\n          \"string\"\n        ],\n        \"follow_up_probes\": [\n          \"string\"\n        ],\n        \"evaluation_criteria\": \"string\"\n      }\n    ]\n  }\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1936,
+        416
+      ],
+      "id": "461e7c09-e519-48b9-a51f-eb0f3631cd58",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v3.2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        416
+      ],
+      "id": "a0f4eba9-34b0-48ca-87dd-47f88e4c5062",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "O5RPgP0MwSC5Xdsa",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: $json.output[0]\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        192
+      ],
+      "id": "290074c6-9ce6-49b8-8b18-1eae7ac0d608",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cv-analysis",
+        "options": {}
+      },
+      "id": "1eae1a12-6e7e-45ee-8baf-8b7760427068",
+      "name": "Receive CV and Job Description",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1568,
+        192
+      ],
+      "webhookId": "bcab3113-5e8a-4003-930c-be40b6452287"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "cv_text",
+              "value": "={{ $json.body.cv_text  }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "job_description",
+              "value": "={{ $('Receive CV and Job Description').item.json.body.job_description }}",
+              "type": "string"
+            },
+            {
+              "id": "82fa3671-4339-44af-8c91-093fdfe5851e",
+              "name": "evaluationId",
+              "value": "={{ $json.body.evaluationId }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "27cf2794-c031-48b4-abea-fbf721e0164b",
+      "name": "Prepare for CV Parser",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://talent-portal-backend.onrender.com/api/callbacks/evaluations/{{ $('Receive CV and Job Description').item.json.body.evaluationId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "n8n-webhook-key-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2368,
+        192
+      ],
+      "id": "a11302ec-b05a-447a-9fbb-3ca01898c691",
+      "name": "Send Evaluation Callback1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract Personal Info": {
+      "main": [
+        [
+          {
+            "node": "Merge Validation Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Validation Results": {
+      "main": [
+        [
+          {
+            "node": "Matching Engine API Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Final Response": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CV Parser API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse CV Parser Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CV Parser Response": {
+      "main": [
+        [
+          {
+            "node": "Merge CV and JD Parsers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consistency Check API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse Consistency Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skills Taxonomy API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse Skills Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Consistency Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Validation Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Parse Skills Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Validation Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Matching Engine API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse Matching Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Matching Response": {
+      "main": [
+        [
+          {
+            "node": "HR Questions API Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Technical Questions API Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Questions API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse HR Questions Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Technical Questions Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Interview Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse HR Questions Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Interview Questions",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge CV and JD Parsers": {
+      "main": [
+        [
+          {
+            "node": "Combine CV and JD Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine CV and JD Data": {
+      "main": [
+        [
+          {
+            "node": "Skills Taxonomy API Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consistency Check API Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Personal Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Questions API Call": {
+      "main": [
+        [
+          {
+            "node": "Parse Technical Questions Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send Evaluation Callback1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive CV and Job Description": {
+      "main": [
+        [
+          {
+            "node": "Prepare for CV Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare for CV Parser": {
+      "main": [
+        [
+          {
+            "node": "CV Parser API Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge CV and JD Parsers",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Interview Questions": {
+      "main": [
+        [
+          {
+            "node": "Build Final Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1b2f1563-fab5-450a-affc-f284b00a7ebf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6c392e37fce32e9058c3c2febf5c3f83a14c57d17dbf90884886b4a35c03eaeb"
+  },
+  "id": "aVbknZ5svODlsYZi",
+  "tags": []
+}
