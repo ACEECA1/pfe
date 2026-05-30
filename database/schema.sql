@@ -112,7 +112,7 @@ create table refresh_tokens (
     id bigint not null auto_increment,
     updated_at datetime(6) not null,
     user_id bigint not null references users (id),
-    token varchar(1000) not null unique,
+    token varchar(768) not null unique,
     primary key (id)
 ) engine=InnoDB;
 
