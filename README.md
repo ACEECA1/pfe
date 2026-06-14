@@ -1,4 +1,4 @@
-# CV Grading System (Djezzy Talent)
+# CV Grading System
 
 An AI-powered talent acquisition platform built for parsing, structuring, and evaluating candidate resumes against job descriptions. It automates heavy HR workloads using NVIDIA Nemotron OCR, advanced LLMs via OpenRouter, and optional automation through n8n.
 
